@@ -3,56 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIBE MUSIC HUB</title>
+    <title>VIBE PLAYLIST PRO</title>
     <style>
-        body { background-color: #000; color: white; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 20px; }
-        h1 { color: #2ecc71; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 5px; }
-        .tagline { color: #666; font-size: 14px; margin-bottom: 30px; }
-        .playlist { max-width: 450px; margin: auto; }
-        .section-title { color: #888; text-align: left; margin: 25px 0 10px 5px; font-size: 13px; text-transform: uppercase; font-weight: bold; border-left: 3px solid #2ecc71; padding-left: 10px; }
-        .song-card { 
-            background: #111; border-radius: 12px; display: flex; align-items: center; 
-            padding: 12px; margin-bottom: 10px; border: 1px solid #222; text-decoration: none; color: white; transition: 0.3s;
+        body { background-color: #000; color: #2ecc71; font-family: sans-serif; text-align: center; padding: 20px; }
+        h1 { font-size: 24px; margin-bottom: 30px; letter-spacing: 1px; }
+        .playlist { max-width: 400px; margin: auto; }
+        .card { 
+            background: #111; border-radius: 15px; padding: 20px; margin-bottom: 15px; 
+            text-align: left; border: 1px solid #222;
         }
-        .song-card:hover { background: #1a1a1a; border-color: #2ecc71; transform: translateY(-2px); }
-        .song-img { width: 50px; height: 50px; border-radius: 6px; margin-right: 15px; font-size: 24px; display: flex; align-items: center; justify-content: center; background: #222; }
-        .info { flex-grow: 1; text-align: left; }
-        .title { font-weight: bold; font-size: 16px; margin: 0; }
-        .sub { color: #2ecc71; font-size: 12px; margin: 0; }
-        .play-icon { color: #2ecc71; font-size: 20px; font-weight: bold; }
+        .title { color: white; font-weight: bold; font-size: 18px; margin: 0; }
+        .sub { color: #888; font-size: 14px; margin-bottom: 10px; }
+        audio { width: 100%; height: 35px; filter: invert(100%) hue-rotate(90deg); }
     </style>
 </head>
 <body>
 
-    <h1>VIBE MUSIC HUB 🎧</h1>
-    <div class="tagline">90s Lo-fi • Punjabi • English Pop</div>
+    <h1>VIBE PLAYLIST PRO</h1>
 
     <div class="playlist">
-        
-        <div class="section-title">90s Bollywood Lo-fi ☁️</div>
-        <a href="https://www.jiosaavn.com/featured/bollywood-lo-fi/x9C,0Mv9sT0_" target="_blank" class="song-card">
-            <div class="song-img">📻</div>
-            <div class="info"><p class="title">90s Nostalgia Lo-fi</p><p class="sub">Kumar Sanu & Alka Vibes</p></div>
-            <div class="play-icon">▶</div>
-        </a>
+        <div class="card">
+            <p class="title">Deep Forest</p>
+            <p class="sub">Nature Sound</p>
+            <audio controls src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+        </div>
 
-        <div class="section-title">Punjabi Tadka 🔥</div>
-        <a href="https://www.jiosaavn.com/featured/punjabi-weekly-hot-20/LpU-Y,9P,0A_" target="_blank" class="song-card">
-            <div class="song-img">🚜</div>
-            <div class="info"><p class="title">Punjabi Hits</p><p class="sub">Sidhu, Diljit, Shubh</p></div>
-            <div class="play-icon">▶</div>
-        </a>
+        <div class="card">
+            <p class="title">Ocean Waves</p>
+            <p class="sub">Peaceful Water</p>
+            <audio controls src="https://assets.mixkit.co/music/preview/mixkit-crashing-waves-731.mp3"></audio>
+        </div>
 
-        <div class="section-title">English Pop 🌎</div>
-        <a href="https://www.jiosaavn.com/featured/english-hit-songs/m,T7-I,0-k0_" target="_blank" class="song-card">
-            <div class="song-img">🎸</div>
-            <div class="info"><p class="title">Global Hits</p><p class="sub">Top English Pop</p></div>
-            <div class="play-icon">▶</div>
-        </a>
+        <div class="card">
+            <p class="title">Rainy Night</p>
+            <p class="sub">Soft Rain</p>
+            <audio controls src="https://assets.mixkit.co/music/preview/mixkit-soft-rain-ambient-702.mp3"></audio>
+        </div>
 
+        <div class="card">
+            <p class="title">Zen Meditation</p>
+            <p class="sub">Yoga & Peace</p>
+            <audio controls src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3"></audio>
+        </div>
     </div>
-
-    <p style="margin-top: 50px; color: #444; font-size: 12px;">Made with ❤️ by 23121998sd</p>
 
 </body>
 </html>
