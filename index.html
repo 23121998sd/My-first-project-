@@ -6,32 +6,36 @@
     <title>SD VIBE PRO</title>
     <style>
         :root { --neon: #39FF14; --bg: #0b0b0b; }
-        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; padding-bottom: 200px; }
+        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; padding-bottom: 200px; overflow-x: hidden; }
         .header { background: rgba(57, 255, 20, 0.1); padding: 20px; text-align: center; border-bottom: 2px solid var(--neon); }
         .search-box { display: flex; gap: 8px; padding: 15px; }
         input { flex: 1; padding: 12px; border-radius: 20px; border: 1px solid #444; background: #111; color: #fff; outline: none; }
         .btn-neon { background: var(--neon); color: #000; border: none; padding: 10px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; }
         
-        /* Music Card */
+        /* Music Card List */
         .music-card { 
             background: #1a1a1a; margin: 10px; padding: 12px; border-radius: 12px; 
             display: flex; align-items: center; gap: 15px; border-left: 4px solid var(--neon);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
-        .album-art { width: 50px; height: 50px; border-radius: 5px; }
+        .album-art { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
         .info { flex: 1; overflow: hidden; }
-        .song-title { display: block; font-weight: bold; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .song-title { display: block; font-weight: bold; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         /* FIXED PLAYER BAR */
         .player-bar { 
             position: fixed; bottom: 0; left: 0; width: 100%; background: #000; 
-            padding: 15px; border-top: 2px solid var(--neon); z-index: 1000; 
+            padding: 20px 15px; border-top: 3px solid var(--neon); z-index: 9999;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.9);
         }
-        #seekbar { width: 100%; accent-color: var(--neon); margin: 10px 0; }
+        #seekbar { width: 100%; accent-color: var(--neon); height: 5px; margin: 10px 0; cursor: pointer; }
         .controls { display: flex; justify-content: center; align-items: center; gap: 30px; }
-        .ctrl-btn { background: none; border: none; font-size: 25px; color: white; cursor: pointer; }
-        #master-play { background: var(--neon); color: #000; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .ctrl-btn { background: none; border: none; font-size: 30px; color: white; cursor: pointer; }
+        #master-play { background: var(--neon); color: #000; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; }
         
-        #yt-wrap { position: absolute; top: -1000px; left: -1000px; opacity: 0; }
+        #yt-container { position: absolute; top: -5000px; visibility: hidden; }
+        .activate-msg { color: var(--neon); font-size: 10px; text-align: center; margin-top: 5px; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.3; } }
     </style>
 </head>
 <body>
@@ -39,15 +43,15 @@
 <div class="header"><h1>🎶 SD VIBE MUSIC</h1></div>
 
 <div class="search-box">
-    <input type="text" id="query" placeholder="Search song...">
+    <input type="text" id="query" placeholder="Singer or Song Name...">
     <button class="btn-neon" onclick="searchMusic()">Search</button>
 </div>
 
 <div id="results"></div>
 
 <div class="player-bar" id="player-ui" style="display:none;">
-    <div id="play-title" style="font-size:11px; color:var(--neon); text-align:center; margin-bottom:5px;">Loading...</div>
-    <div style="display:flex; justify-content:space-between; font-size:10px; padding:0 10px;">
+    <div id="play-title" style="font-size:11px; color:var(--neon); text-align:center; margin-bottom:5px; font-weight:bold;">Tap Play to Start</div>
+    <div style="display:flex; justify-content:space-between; font-size:10px; padding:0 10px; opacity:0.8;">
         <span id="time-curr">0:00</span>
         <span id="time-dur">0:00</span>
     </div>
@@ -57,46 +61,48 @@
         <button class="ctrl-btn" id="master-play" onclick="togglePlay()">▶</button>
         <button class="ctrl-btn" onclick="playNext()">⏭</button>
     </div>
+    <div class="activate-msg" id="msg-hint">Tip: Click '▶' twice if song doesn't start</div>
 </div>
 
-<div id="yt-wrap"><div id="player"></div></div>
+<div id="yt-container"><div id="main-player"></div></div>
 
 <script>
     const API_KEY = 'AIzaSyBUk4Xa_ZALVYYfWIkpjoZrdx0lt57Y0Gw'; 
     let player, timer, currentIdx = 0, songs = [];
 
-    // Load API
+    // Load YouTube API
     const tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
     document.head.appendChild(tag);
 
     function onYouTubeIframeAPIReady() {
-        player = new YT.Player('player', {
+        player = new YT.Player('main-player', {
             height: '0', width: '0',
+            playerVars: { 'autoplay': 1, 'controls': 0, 'playsinline': 1 },
             events: { 
-                'onReady': () => console.log("Player Ready"),
+                'onReady': () => console.log("System Ready"),
                 'onStateChange': (e) => {
                     if(e.data == YT.PlayerState.PLAYING) {
                         document.getElementById('master-play').innerText = 'II';
+                        document.getElementById('msg-hint').style.display = 'none';
                         startTimer();
                     } else if(e.data == YT.PlayerState.ENDED) {
                         playNext();
                     } else {
                         document.getElementById('master-play').innerText = '▶';
                     }
-                },
-                'onError': (e) => alert("YouTube blocked this song. Try another!")
+                }
             }
         });
     }
 
     async function searchMusic() {
-        const q = document.getElementById('query').value || "Top Bollywood Hits 2026";
+        const q = document.getElementById('query').value || "Top Bollywood Original Songs";
         const div = document.getElementById('results');
-        div.innerHTML = '<p style="text-align:center;">Searching Original Audio...</p>';
+        div.innerHTML = '<p style="text-align:center;">Syncing Vibe...</p>';
         
         try {
-            const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(q + " Official Audio")}&type=video&key=${API_KEY}`);
+            const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${encodeURIComponent(q + " Official Audio")}&type=video&videoDuration=short&key=${API_KEY}`);
             const data = await res.json();
             songs = data.items;
             div.innerHTML = '';
@@ -110,7 +116,7 @@
                         <div style="color:var(--neon)">▶</div>
                     </div>`;
             });
-        } catch(e) { div.innerHTML = '<p>Search Error!</p>'; }
+        } catch(e) { div.innerHTML = '<p>Limit Error. Try later!</p>'; }
     }
 
     function playSong(i) {
@@ -119,6 +125,7 @@
         player.loadVideoById(vidId);
         document.getElementById('play-title').innerText = songs[i].snippet.title;
         document.getElementById('player-ui').style.display = 'block';
+        document.getElementById('msg-hint').style.display = 'block';
     }
 
     function playNext() { if(currentIdx < songs.length-1) playSong(currentIdx+1); }
@@ -126,7 +133,8 @@
 
     function togglePlay() {
         const state = player.getPlayerState();
-        if(state == 1) player.pauseVideo(); else player.playVideo();
+        if(state == 1) player.pauseVideo(); 
+        else player.playVideo();
     }
 
     function startTimer() {
@@ -144,10 +152,9 @@
     }
 
     function fmt(s) { const m=Math.floor(s/60); s=Math.floor(s%60); return m+":"+(s<10?'0':'')+s; }
-    
     document.getElementById('seekbar').oninput = function() { player.seekTo(this.value, true); };
-    
     window.onload = () => { searchMusic(); };
 </script>
 </body>
 </html>
+
