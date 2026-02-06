@@ -2,40 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SD VIBE PRO</title>
     <style>
         :root { --neon: #39FF14; --bg: #0b0b0b; }
-        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; padding-bottom: 200px; overflow-x: hidden; }
-        .header { background: rgba(57, 255, 20, 0.1); padding: 20px; text-align: center; border-bottom: 2px solid var(--neon); }
-        .search-box { display: flex; gap: 8px; padding: 15px; }
+        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; padding-bottom: 220px; overflow-x: hidden; }
+        .header { background: rgba(57, 255, 20, 0.1); padding: 15px; text-align: center; border-bottom: 2px solid var(--neon); }
+        .search-box { display: flex; gap: 8px; padding: 12px; }
         input { flex: 1; padding: 12px; border-radius: 20px; border: 1px solid #444; background: #111; color: #fff; outline: none; }
         .btn-neon { background: var(--neon); color: #000; border: none; padding: 10px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; }
         
         /* Music Card List */
         .music-card { 
-            background: #1a1a1a; margin: 10px; padding: 12px; border-radius: 12px; 
-            display: flex; align-items: center; gap: 15px; border-left: 4px solid var(--neon);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            background: #1a1a1a; margin: 8px 12px; padding: 12px; border-radius: 12px; 
+            display: flex; align-items: center; gap: 12px; border-left: 4px solid var(--neon);
         }
         .album-art { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
         .info { flex: 1; overflow: hidden; }
         .song-title { display: block; font-weight: bold; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* FIXED PLAYER BAR */
+        /* FIXED & CLICKABLE PLAYER BAR */
         .player-bar { 
-            position: fixed; bottom: 0; left: 0; width: 100%; background: #000; 
-            padding: 20px 15px; border-top: 3px solid var(--neon); z-index: 9999;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.9);
+            position: fixed; bottom: 10px; left: 5%; width: 90%; background: #111; 
+            padding: 15px; border-radius: 20px; border: 2px solid var(--neon); z-index: 99999;
+            box-shadow: 0 0 25px rgba(57, 255, 20, 0.3);
         }
-        #seekbar { width: 100%; accent-color: var(--neon); height: 5px; margin: 10px 0; cursor: pointer; }
-        .controls { display: flex; justify-content: center; align-items: center; gap: 30px; }
-        .ctrl-btn { background: none; border: none; font-size: 30px; color: white; cursor: pointer; }
-        #master-play { background: var(--neon); color: #000; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; }
+        #seekbar { width: 100%; accent-color: var(--neon); height: 8px; margin: 8px 0; cursor: pointer; }
+        .controls { display: flex; justify-content: center; align-items: center; gap: 40px; }
+        .ctrl-btn { background: none; border: none; font-size: 32px; color: white; cursor: pointer; padding: 5px; }
+        #master-play { background: var(--neon); color: #000; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; }
         
-        #yt-container { position: absolute; top: -5000px; visibility: hidden; }
-        .activate-msg { color: var(--neon); font-size: 10px; text-align: center; margin-top: 5px; animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0.3; } }
+        /* Chota Player (Zaruri hai browser ke liye) */
+        #yt-hidden { position: fixed; top: 0; left: 0; width: 1px; height: 1px; opacity: 0.01; pointer-events: none; }
+        .tip { color: var(--neon); font-size: 9px; text-align: center; margin-top: 5px; opacity: 0.8; }
     </style>
 </head>
 <body>
@@ -43,48 +42,45 @@
 <div class="header"><h1>🎶 SD VIBE MUSIC</h1></div>
 
 <div class="search-box">
-    <input type="text" id="query" placeholder="Singer or Song Name...">
+    <input type="text" id="query" placeholder="Gaana dhoondo...">
     <button class="btn-neon" onclick="searchMusic()">Search</button>
 </div>
 
 <div id="results"></div>
 
 <div class="player-bar" id="player-ui" style="display:none;">
-    <div id="play-title" style="font-size:11px; color:var(--neon); text-align:center; margin-bottom:5px; font-weight:bold;">Tap Play to Start</div>
-    <div style="display:flex; justify-content:space-between; font-size:10px; padding:0 10px; opacity:0.8;">
+    <div id="play-title" style="font-size:11px; color:var(--neon); text-align:center; margin-bottom:5px; font-weight:bold;">Ready to Play</div>
+    <div style="display:flex; justify-content:space-between; font-size:10px; opacity:0.8;">
         <span id="time-curr">0:00</span>
         <span id="time-dur">0:00</span>
     </div>
-    <input type="range" id="seekbar" value="0">
+    <input type="range" id="seekbar" value="0" min="0">
     <div class="controls">
         <button class="ctrl-btn" onclick="playPrev()">⏮</button>
         <button class="ctrl-btn" id="master-play" onclick="togglePlay()">▶</button>
         <button class="ctrl-btn" onclick="playNext()">⏭</button>
     </div>
-    <div class="activate-msg" id="msg-hint">Tip: Click '▶' twice if song doesn't start</div>
+    <div class="tip">Note: Click '▶' 2 times if music doesn't start</div>
 </div>
 
-<div id="yt-container"><div id="main-player"></div></div>
+<div id="yt-hidden"><div id="main-player"></div></div>
 
 <script>
     const API_KEY = 'AIzaSyBUk4Xa_ZALVYYfWIkpjoZrdx0lt57Y0Gw'; 
     let player, timer, currentIdx = 0, songs = [];
 
-    // Load YouTube API
     const tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
     document.head.appendChild(tag);
 
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('main-player', {
-            height: '0', width: '0',
+            height: '10', width: '10',
             playerVars: { 'autoplay': 1, 'controls': 0, 'playsinline': 1 },
             events: { 
-                'onReady': () => console.log("System Ready"),
                 'onStateChange': (e) => {
                     if(e.data == YT.PlayerState.PLAYING) {
                         document.getElementById('master-play').innerText = 'II';
-                        document.getElementById('msg-hint').style.display = 'none';
                         startTimer();
                     } else if(e.data == YT.PlayerState.ENDED) {
                         playNext();
@@ -97,10 +93,9 @@
     }
 
     async function searchMusic() {
-        const q = document.getElementById('query').value || "Top Bollywood Original Songs";
+        const q = document.getElementById('query').value || "Top Bollywood Hits";
         const div = document.getElementById('results');
-        div.innerHTML = '<p style="text-align:center;">Syncing Vibe...</p>';
-        
+        div.innerHTML = '<p style="text-align:center;">Vibing...</p>';
         try {
             const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${encodeURIComponent(q + " Official Audio")}&type=video&videoDuration=short&key=${API_KEY}`);
             const data = await res.json();
@@ -110,22 +105,18 @@
                 div.innerHTML += `
                     <div class="music-card" onclick="playSong(${i})">
                         <img class="album-art" src="${item.snippet.thumbnails.medium.url}">
-                        <div class="info">
-                            <span class="song-title">${item.snippet.title}</span>
-                        </div>
+                        <div class="info"><span class="song-title">${item.snippet.title}</span></div>
                         <div style="color:var(--neon)">▶</div>
                     </div>`;
             });
-        } catch(e) { div.innerHTML = '<p>Limit Error. Try later!</p>'; }
+        } catch(e) { div.innerHTML = '<p>Search Error!</p>'; }
     }
 
     function playSong(i) {
         currentIdx = i;
-        const vidId = songs[i].id.videoId;
-        player.loadVideoById(vidId);
+        player.loadVideoById(songs[i].id.videoId);
         document.getElementById('play-title').innerText = songs[i].snippet.title;
         document.getElementById('player-ui').style.display = 'block';
-        document.getElementById('msg-hint').style.display = 'block';
     }
 
     function playNext() { if(currentIdx < songs.length-1) playSong(currentIdx+1); }
@@ -133,8 +124,7 @@
 
     function togglePlay() {
         const state = player.getPlayerState();
-        if(state == 1) player.pauseVideo(); 
-        else player.playVideo();
+        if(state == 1) player.pauseVideo(); else player.playVideo();
     }
 
     function startTimer() {
@@ -143,8 +133,9 @@
             const cur = player.getCurrentTime();
             const dur = player.getDuration();
             if(dur > 0) {
-                document.getElementById('seekbar').max = dur;
-                document.getElementById('seekbar').value = cur;
+                const bar = document.getElementById('seekbar');
+                bar.max = dur;
+                bar.value = cur;
                 document.getElementById('time-curr').innerText = fmt(cur);
                 document.getElementById('time-dur').innerText = fmt(dur);
             }
@@ -157,4 +148,3 @@
 </script>
 </body>
 </html>
-
