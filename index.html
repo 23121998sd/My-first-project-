@@ -31,20 +31,18 @@
 <div id="results"></div>
 
 <script>
-    // Aapki Working API Key
-    const API_KEY = 'AIzaSyCZntodiAxzGvzkxTQPWo1Wkl7WQgAX2U'; 
+    // Nina hosa API Key illide
+    const API_KEY = 'AIzaSyBUk4Xa_ZALVYYfWIkpjoZrdx0lt57Y0Gw'; 
 
-    // Page khulte hi ye function chalega
     window.onload = function() {
+        // Page open adaga ee songs automatic barutthe
         searchMusic("Arijit Singh Bengali Trending Songs");
     };
 
     async function searchMusic(customQuery = null) {
         const query = customQuery || document.getElementById('query').value;
         const div = document.getElementById('results');
-        
-        // Loader dikhayega
-        div.innerHTML = '<p>Loading Bengali Hits... 🎵</p>';
+        div.innerHTML = '<p>Loading Songs... 🎵</p>';
         
         const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(query)}&type=video&key=${API_KEY}`;
         
@@ -60,12 +58,15 @@
                     div.innerHTML += `
                         <div class="song-card">
                             <strong style="display:block; margin-bottom:5px;">${title}</strong>
-                            <iframe src="https://www.youtube.com/embed/${id}?autoplay=0"></iframe>
-                            <button class="share-btn" onclick="share('${title.replace(/'/g, "")}', '${id}')">📤 SHARE</button>
+                            <iframe src="https://www.youtube.com/embed/${id}"></iframe>
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span style="font-size:10px; opacity:0.5;">YouTube Music</span>
+                                <button class="share-btn" onclick="share('${title.replace(/'/g, "")}', '${id}')">📤 SHARE</button>
+                            </div>
                         </div>`;
                 });
             } else {
-                div.innerHTML = '<p>No songs found. Try searching something else!</p>';
+                div.innerHTML = '<p>Songs sigtha illa. API Key status check madi.</p>';
             }
         } catch(e) { 
             div.innerHTML = '<p style="color:red;">Error fetching songs!</p>'; 
@@ -74,9 +75,13 @@
 
     function share(title, id) {
         const link = "https://youtu.be/" + id;
-        if(navigator.share) navigator.share({title, url: link});
-        else alert("Link: " + link);
+        if(navigator.share) {
+            navigator.share({title: title, url: link});
+        } else {
+            alert("Link: " + link);
+        }
     }
 </script>
 </body>
 </html>
+
