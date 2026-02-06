@@ -3,51 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SD VIBE PRO - Music Social</title>
+    <title>SD VIBE PRO</title>
     <style>
         :root { --neon: #39FF14; --bg: #0b0b0b; }
-        body { 
-            background: var(--bg); color: #fff; font-family: 'Poppins', sans-serif; margin: 0; padding-bottom: 150px;
-            background-image: linear-gradient(45deg, #0b0b0b 25%, #1a1a1a 100%);
-            background-attachment: fixed;
-        }
+        body { background: var(--bg); color: #fff; font-family: 'Poppins', sans-serif; margin: 0; padding-bottom: 150px; }
         
-        /* Glassmorphism Header */
-        .header { 
-            background: rgba(29, 185, 84, 0.2); backdrop-filter: blur(10px);
-            padding: 30px; text-align: center; border-bottom: 1px solid var(--neon);
-            border-radius: 0 0 30px 30px; margin-bottom: 20px;
-        }
-
-        .search-box { display: flex; gap: 10px; padding: 0 15px; margin-bottom: 20px; }
-        input { 
-            flex: 1; padding: 15px; border-radius: 30px; border: 1px solid #333;
-            background: rgba(255,255,255,0.1); color: white; outline: none;
-        }
-        .btn-neon { background: var(--neon); color: #000; border: none; padding: 10px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; box-shadow: 0 0 15px var(--neon); }
-
+        /* Glass Header */
+        .header { background: rgba(29, 185, 84, 0.2); backdrop-filter: blur(10px); padding: 25px; text-align: center; border-bottom: 2px solid var(--neon); }
+        
         /* Login Modal */
-        #login-overlay { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; align-items: center; justify-content: center; text-align: center; }
+        #login-overlay { position: fixed; inset: 0; background: #000; z-index: 1000; display: none; align-items: center; justify-content: center; text-align: center; }
         
-        /* Music Card with Album Art */
-        .music-card { 
-            background: rgba(255,255,255,0.05); margin: 10px 15px; padding: 12px;
-            border-radius: 15px; display: flex; align-items: center; gap: 15px;
-            border: 1px solid rgba(255,255,255,0.1); transition: 0.3s;
-        }
-        .music-card:active { transform: scale(0.95); background: rgba(57, 255, 20, 0.1); }
-        .album-art { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; }
-        .info { flex: 1; overflow: hidden; }
-        .song-title { display: block; font-weight: bold; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .search-box { display: flex; gap: 10px; padding: 15px; }
+        input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #444; background: #1a1a1a; color: white; outline: none; }
+        .btn-neon { background: var(--neon); color: #000; border: none; padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 0 10px var(--neon); }
 
-        /* Floating Bottom Player */
-        .player-bar { 
-            position: fixed; bottom: 0; width: 100%; background: rgba(0,0,0,0.95);
-            padding: 15px; border-top: 2px solid var(--neon); backdrop-filter: blur(15px);
+        /* Music Card */
+        .music-card { 
+            background: rgba(255,255,255,0.05); margin: 8px 15px; padding: 10px;
+            border-radius: 12px; display: flex; align-items: center; gap: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .progress-bar { width: 100%; accent-color: var(--neon); height: 5px; margin-bottom: 10px; }
-        .controls { display: flex; justify-content: space-around; align-items: center; }
-        
+        .album-art { width: 55px; height: 55px; border-radius: 8px; object-fit: cover; }
+        .info { flex: 1; overflow: hidden; }
+        .song-title { display: block; font-weight: bold; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Bottom Player */
+        .player-bar { position: fixed; bottom: 0; width: 100%; background: rgba(0,0,0,0.95); padding: 15px; border-top: 2px solid var(--neon); z-index: 999; backdrop-filter: blur(10px); }
+        .controls { display: flex; justify-content: center; align-items: center; gap: 20px; }
+        #seekbar { width: 100%; accent-color: var(--neon); margin: 10px 0; }
         #hidden-yt { display: none; }
     </style>
 </head>
@@ -55,34 +39,39 @@
 
 <div id="login-overlay">
     <div>
-        <h1 style="color: var(--neon);">SD VIBE PRO</h1>
-        <p>Enter your ID to Start Vibe</p>
-        <input type="text" id="user-id" placeholder="Your Name/ID" style="margin-bottom: 20px; width: 80%;"><br>
-        <button class="btn-neon" onclick="doLogin()">LOGIN</button>
+        <h1 style="color: var(--neon); margin-bottom: 5px;">SD VIBE PRO</h1>
+        <p style="font-size: 12px; opacity: 0.7;">Enter your ID to Vibe</p>
+        <input type="text" id="user-id-input" placeholder="User ID / Name" style="margin-bottom: 15px; text-align: center;"><br>
+        <button class="btn-neon" onclick="saveLogin()">START VIBING</button>
     </div>
 </div>
 
 <div class="header">
-    <h2 id="welcome-msg" style="margin:0; font-size: 18px;">Welcome, Viber!</h2>
-    <button onclick="shareApp()" style="background:none; border:1px solid var(--neon); color:var(--neon); border-radius:15px; margin-top:10px; font-size:10px; padding:5px 10px;">📤 SHARE APP</button>
+    <h1 style="margin:0; font-size:20px;" id="display-name">🎶 SD VIBE PRO</h1>
+    <div style="display:flex; justify-content:center; gap:10px; margin-top:10px;">
+        <button onclick="shareApp()" style="background:none; border:1px solid var(--neon); color:var(--neon); border-radius:10px; font-size:10px; padding:4px 8px;">📤 SHARE APP</button>
+        <button onclick="logout()" style="background:none; border:1px solid #ff4444; color:#ff4444; border-radius:10px; font-size:10px; padding:4px 8px;">LOGOUT</button>
+    </div>
 </div>
 
 <div class="search-box">
-    <input type="text" id="query" placeholder="Artists, Songs, Vibes...">
+    <input type="text" id="query" placeholder="Singer or Song Name...">
     <button class="btn-neon" onclick="searchMusic()">Search</button>
 </div>
 
 <div id="results"></div>
 
 <div class="player-bar" id="player-ui" style="display:none;">
-    <div id="play-title" style="font-size:12px; color:var(--neon); text-align:center; margin-bottom:5px;">Song Name</div>
-    <input type="range" class="progress-bar" id="seekbar" value="0">
-    <div class="controls">
+    <div id="play-title" style="font-size:11px; color:var(--neon); text-align:center; margin-bottom:5px; white-space:nowrap; overflow:hidden;">Song Name</div>
+    <div style="display:flex; justify-content: space-between; font-size:10px; opacity:0.7;">
         <span id="time-curr">0:00</span>
-        <button onclick="skip(-10)" style="background:none; border:none; color:white; font-size:20px;">⏪</button>
-        <button id="master-play" onclick="togglePlay()" style="background:var(--neon); border:none; width:50px; height:50px; border-radius:50%; font-size:25px;">II</button>
-        <button onclick="skip(10)" style="background:none; border:none; color:white; font-size:20px;">⏩</button>
         <span id="time-dur">0:00</span>
+    </div>
+    <input type="range" id="seekbar" value="0">
+    <div class="controls">
+        <button onclick="skip(-10)" style="background:none; border:none; color:white; font-size:22px;">⏪</button>
+        <button id="master-play" onclick="togglePlay()" style="background:var(--neon); border:none; width:45px; height:45px; border-radius:50%; font-size:20px;">II</button>
+        <button onclick="skip(10)" style="background:none; border:none; color:white; font-size:22px;">⏩</button>
     </div>
 </div>
 
@@ -90,26 +79,36 @@
 
 <script>
     const API_KEY = 'AIzaSyBUk4Xa_ZALVYYfWIkpjoZrdx0lt57Y0Gw'; 
-    let player, timer, songList = [];
+    let player, timer;
 
-    // Login Logic
-    function doLogin() {
-        const id = document.getElementById('user-id').value;
-        if(!id) return alert("Please enter an ID");
-        document.getElementById('welcome-msg').innerText = "Vibing: " + id;
-        document.getElementById('login-overlay').style.display = 'none';
-        searchMusic("2024 Global Trending Hits Mix");
-    }
-
-    // Share App Function
-    function shareApp() {
-        const appLink = window.location.href;
-        if(navigator.share) {
-            navigator.share({ title: 'SD VIBE PRO', text: 'Bro, check out this sick Music App!', url: appLink });
+    // Persistent Login Check
+    window.onload = function() {
+        const savedName = localStorage.getItem('sd_vibe_user');
+        if (savedName) {
+            document.getElementById('display-name').innerText = "Vibe: " + savedName;
+            searchMusic("Latest Bollywood Punjabi Hits 2024");
+        } else {
+            document.getElementById('login-overlay').style.display = 'flex';
         }
+    };
+
+    function saveLogin() {
+        const name = document.getElementById('user-id-input').value;
+        if (!name) return alert("Please enter your name!");
+        localStorage.setItem('sd_vibe_user', name);
+        location.reload(); // Reload to start app
     }
 
-    // YouTube Setup
+    function logout() {
+        localStorage.removeItem('sd_vibe_user');
+        location.reload();
+    }
+
+    function shareApp() {
+        if(navigator.share) navigator.share({ title: 'SD VIBE PRO', url: window.location.href });
+    }
+
+    // Player Setup
     const tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
     document.head.appendChild(tag);
@@ -119,7 +118,6 @@
             height: '0', width: '0',
             events: { 'onStateChange': (e) => { 
                 if(e.data == YT.PlayerState.PLAYING) startTimer();
-                if(e.data == YT.PlayerState.ENDED) playNext(); 
             }}
         });
     }
@@ -127,29 +125,31 @@
     async function searchMusic(q = null) {
         const query = q || document.getElementById('query').value;
         const resDiv = document.getElementById('results');
-        resDiv.innerHTML = '<p style="text-align:center;">Fetching Vibe...</p>';
+        resDiv.innerHTML = '<p style="text-align:center; font-size:12px;">Syncing Original Vibes...</p>';
+        
+        // Strict Original Audio Filter
+        const finalQuery = query + " Official Music Video";
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(finalQuery)}&type=video&videoDuration=short&key=${API_KEY}`;
         
         try {
-            const response = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${encodeURIComponent(query)}&type=video&key=${API_KEY}`);
+            const response = await fetch(url);
             const data = await response.json();
             resDiv.innerHTML = '';
-            songList = data.items;
-
-            data.items.forEach((item, index) => {
+            data.items.forEach((item) => {
                 resDiv.innerHTML += `
-                    <div class="music-card" onclick="playSong('${item.id.videoId}', '${item.snippet.title.replace(/'/g,"")}', ${index})">
+                    <div class="music-card" onclick="playSong('${item.id.videoId}', '${item.snippet.title.replace(/'/g,"")}')">
                         <img class="album-art" src="${item.snippet.thumbnails.medium.url}">
                         <div class="info">
                             <span class="song-title">${item.snippet.title}</span>
-                            <span style="font-size:10px; opacity:0.6;">${item.snippet.channelTitle}</span>
+                            <span style="font-size:10px; opacity:0.5;">Official Audio</span>
                         </div>
                         <div style="color:var(--neon)">▶</div>
                     </div>`;
             });
-        } catch(e) { resDiv.innerHTML = '<p>Limit Exceeded!</p>'; }
+        } catch(e) { resDiv.innerHTML = '<p>Limit reached. Try again later!</p>'; }
     }
 
-    function playSong(id, title, index) {
+    function playSong(id, title) {
         player.loadVideoById(id);
         document.getElementById('play-title').innerText = title;
         document.getElementById('player-ui').style.display = 'block';
@@ -161,10 +161,12 @@
         timer = setInterval(() => {
             const cur = player.getCurrentTime();
             const dur = player.getDuration();
-            document.getElementById('seekbar').max = dur;
-            document.getElementById('seekbar').value = cur;
-            document.getElementById('time-curr').innerText = fmt(cur);
-            document.getElementById('time-dur').innerText = fmt(dur);
+            if(dur > 0) {
+                document.getElementById('seekbar').max = dur;
+                document.getElementById('seekbar').value = cur;
+                document.getElementById('time-curr').innerText = fmt(cur);
+                document.getElementById('time-dur').innerText = fmt(dur);
+            }
         }, 1000);
     }
 
@@ -179,7 +181,6 @@
     }
 
     function skip(s) { player.seekTo(player.getCurrentTime() + s, true); }
-
     document.getElementById('seekbar').oninput = function() { player.seekTo(this.value, true); };
 </script>
 </body>
