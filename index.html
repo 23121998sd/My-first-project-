@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SD VIBE PRO</title>
+    <title>SD VIBE PRO - Bengali Hits</title>
     <style>
         :root { --neon: #39FF14; --bg: #000; --card: #121212; }
         body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; padding: 15px; text-align: center; }
@@ -12,15 +12,15 @@
         input { flex: 1; padding: 15px; border-radius: 30px; border: 1px solid var(--neon); background: #111; color: white; outline: none; }
         .btn { background: var(--neon); color: black; border: none; padding: 10px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; }
         .song-card { background: var(--card); padding: 15px; border-radius: 15px; margin-bottom: 20px; border-left: 5px solid var(--neon); text-align: left; }
-        iframe { width: 100%; height: 80px; border-radius: 12px; border: none; margin: 10px 0; }
-        .share-btn { background: transparent; color: var(--neon); border: 1px solid var(--neon); padding: 6px 15px; border-radius: 20px; cursor: pointer; }
+        iframe { width: 100%; height: 85px; border-radius: 12px; border: none; margin: 10px 0; }
+        .share-btn { background: transparent; color: var(--neon); border: 1px solid var(--neon); padding: 6px 15px; border-radius: 20px; cursor: pointer; font-size: 12px; }
     </style>
 </head>
 <body>
 
 <div class="header">
     <h1>🎶 SD VIBE PRO</h1>
-    <p>Search & Share Music</p>
+    <p>Arijit Singh & Bengali Special</p>
 </div>
 
 <div class="search-box">
@@ -31,30 +31,38 @@
 <div id="results"></div>
 
 <script>
-    // Aapki real API Key jo aapne screenshot 7813 mein generate ki thi
+    // Maine aapki key yahan daal di hai
     const API_KEY = 'AIzaSyCZntodiAxzGvzkxTQPWo1Wkl7WQgAX2U'; 
 
-    async function searchMusic() {
-        const query = document.getElementById('query').value;
+    window.onload = function() {
+        searchMusic("Arijit Singh Bengali Songs");
+    };
+
+    async function searchMusic(customQuery = null) {
+        const query = customQuery || document.getElementById('query').value;
         if(!query) return;
         const div = document.getElementById('results');
-        div.innerHTML = '<p>Searching...</p>';
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${query}&type=video&key=${API_KEY}`;
+        div.innerHTML = '<p>Loading Songs... 🎵</p>';
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=12&q=${query}&type=video&key=${API_KEY}`;
         try {
             const res = await fetch(url);
             const data = await res.json();
+            if(data.error) {
+                div.innerHTML = '<p style="color:red;">API Error! Check Key Restrictions in Google Cloud.</p>';
+                return;
+            }
             div.innerHTML = '';
             data.items.forEach(item => {
                 const id = item.id.videoId;
                 const title = item.snippet.title;
                 div.innerHTML += `
                     <div class="song-card">
-                        <strong style="color:var(--neon)">${title}</strong>
+                        <strong style="display:block; margin-bottom:5px;">${title}</strong>
                         <iframe src="https://www.youtube.com/embed/${id}"></iframe>
-                        <button class="share-btn" onclick="share('${title}', '${id}')">📤 SHARE LINK</button>
+                        <button class="share-btn" onclick="share('${title.replace(/'/g, "")}', '${id}')">📤 SHARE</button>
                     </div>`;
             });
-        } catch(e) { div.innerHTML = '<p>Error loading songs!</p>'; }
+        } catch(e) { div.innerHTML = '<p>Error loading!</p>'; }
     }
     function share(title, id) {
         const link = "https://youtu.be/" + id;
@@ -64,3 +72,4 @@
 </script>
 </body>
 </html>
+
